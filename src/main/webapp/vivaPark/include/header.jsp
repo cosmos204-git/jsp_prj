@@ -72,7 +72,7 @@
 
 			<div class="header-btns">
 				<button class="vivaheader_btn" style="color: #FF6124; border: 1.5px solid #FF6124; ">예약하기</button>
-				<button class="vivaheader_btn" style="color: #000; border: 1.5px solid #000;">로그인</button>
+				<button class="vivaheader_btn" style="color: #000; border: 1.5px solid #000" onclick="location.href='./login/login_css.jsp'">로그인</button>
 			</div>	
 		</div>
 		<div id=subBar >

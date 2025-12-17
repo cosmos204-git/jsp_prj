@@ -4,15 +4,21 @@
 
 <%
 request.setCharacterEncoding("UTF-8");
+
+String ticketType = request.getParameter("ticketType"); // daily or annual
+if(ticketType == null || ticketType.trim().length() == 0){
+    ticketType = "daily";
+}
+String visitDate  = request.getParameter("visitDate");   // 1일권용
+String payDate    = request.getParameter("payDate");     // 연간권 결제일
+String expireDate = request.getParameter("expireDate");  // 연간권 만료일
+
+pageContext.setAttribute("ticketType", ticketType);
+pageContext.setAttribute("visitDate", visitDate);
+pageContext.setAttribute("payDate", payDate);
+pageContext.setAttribute("expireDate", expireDate);
 %>
 
-<%
-    String ticketType = request.getParameter("ticketType"); // daily or annual
-    if(ticketType == null || ticketType.trim().length() == 0){
-        ticketType = "daily";
-    }
-    pageContext.setAttribute("ticketType", ticketType);
-%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -30,19 +36,18 @@ request.setCharacterEncoding("UTF-8");
         font-family: sans-serif;
         background-color: #f5f5f5;
     }
-    /* 상단 전체를 덮는 어두운 영역 */
     .overlay-area {
         background-color: #2a2a2a;
         color: #000;
         min-height: 400px;
         padding-top: 40px;
+        padding-bottom: 70px;
     }
-    /* 흰색 박스 (수량 선택 영역) */
     .reserve-box {
         max-width: 900px;
-        margin: 0 auto 60px auto;
+        margin: 40px auto 60px auto;
         background-color: #fff;
-        border-radius: 10px 10px 0 0;
+        border-radius: 10px;
         padding: 30px 40px 40px 40px;
         box-shadow: 0 0 15px rgba(0,0,0,0.2);
     }
@@ -89,7 +94,7 @@ request.setCharacterEncoding("UTF-8");
     }
     .price-col {
         text-align: right;
-        width: 200px;
+        width: 220px;
         font-size: 15px;
     }
     .price-col del {
@@ -126,8 +131,8 @@ request.setCharacterEncoding("UTF-8");
         font-weight: 700;
         cursor: pointer;
     }
-    /* footer 영역은 기존과 동일하게 사용 */
     #footer {
+        margin-top:120px;
         background-color: #fff;
         padding: 30px 0;
         border-top: 1px solid #ddd;
@@ -137,14 +142,15 @@ request.setCharacterEncoding("UTF-8");
 <jsp:include page="include/vivatemplet_css.jsp"></jsp:include>
 
 <script>
-    // 1일 / 연간에 따라 기본 가격을 자바스크립트로 내려주기
+    // 정가
     var basePrices = {
-        daily:  { adult: 64000, teen: 56000, child: 48000 },
+        daily:  { adult: 64000,  teen: 56000,  child: 48000 },
         annual: { adult: 320000, teen: 280000, child: 240000 }
     };
+    // 할인 가격 (예시 - 필요시 서버 데이터와 연동)
     var salePrices = {
-        daily:  { adult: 40300, teen: 35850, child: 31200 },
-        annual: { adult: 320000, teen: 280000, child: 240000 } // 연간은 할인 없음 예시
+        daily:  { adult: 40300,  teen: 35850,  child: 31200 },
+        annual: { adult: 256000, teen: 224000, child: 192000 }
     };
 
     function formatNumber(num) {
@@ -176,16 +182,14 @@ request.setCharacterEncoding("UTF-8");
         var descText = desc.join(" · ");
         document.getElementById("totalDesc").innerText = descText;
 
-        // payProcess.jsp 로 넘길 값 설정
         document.getElementById("sendTicketType").value = type;
         document.getElementById("sendQtyAdult").value   = qtyAdult;
         document.getElementById("sendQtyTeen").value    = qtyTeen;
         document.getElementById("sendQtyChild").value   = qtyChild;
-        document.getElementById("sendTotalPrice").value = total;   // 숫자만
+        document.getElementById("sendTotalPrice").value = total;
         document.getElementById("sendTotalDesc").value  = descText;
     }
 
-    // 총합 10매 제한
     function changeQty(id, delta){
         var input  = document.getElementById(id);
         var current = parseInt(input.value) || 0;
@@ -194,7 +198,6 @@ request.setCharacterEncoding("UTF-8");
         var qtyTeen  = parseInt(document.getElementById("qtyTeen").value)  || 0;
         var qtyChild = parseInt(document.getElementById("qtyChild").value) || 0;
 
-        // 현재 합계
         var totalNow = qtyAdult + qtyTeen + qtyChild;
 
         if(delta > 0){
@@ -212,26 +215,31 @@ request.setCharacterEncoding("UTF-8");
     }
 
     $(function(){
-        // 최초 계산
         recalcTotal();
     });
 </script>
 </head>
 <body>
 
-<!-- 결제 페이지로 넘기는 form : 위쪽 박스를 통째로 감싼다 -->
+<div class="wrap">
 <form action="payProcess.jsp" method="post" id="payForm">
 
 <div class="overlay-area">
     <div class="reserve-box">
-        <!-- 티켓 종류 제목 -->
+        <!-- 티켓 종류 + 날짜 표시 -->
         <div class="ticket-title">
             <c:choose>
                 <c:when test="${ticketType eq 'daily'}">
                     1일 이용권
+                    <c:if test="${not empty visitDate}">
+                        (<span>${visitDate}</span> 방문)
+                    </c:if>
                 </c:when>
                 <c:otherwise>
                     연간 이용권
+                    <c:if test="${not empty payDate and not empty expireDate}">
+                        (<span>${payDate}</span> ~ <span>${expireDate}</span>)
+                    </c:if>
                 </c:otherwise>
             </c:choose>
         </div>
@@ -255,7 +263,8 @@ request.setCharacterEncoding("UTF-8");
                         <strong id="sumAdult">40,300원</strong>
                     </c:when>
                     <c:otherwise>
-                        <strong id="sumAdult">320,000원</strong>
+                        <del>320,000원</del>
+                        <strong id="sumAdult">256,000원</strong>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -278,7 +287,8 @@ request.setCharacterEncoding("UTF-8");
                         <strong id="sumTeen">35,850원</strong>
                     </c:when>
                     <c:otherwise>
-                        <strong id="sumTeen">280,000원</strong>
+                        <del>280,000원</del>
+                        <strong id="sumTeen">224,000원</strong>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -301,7 +311,8 @@ request.setCharacterEncoding("UTF-8");
                         <strong id="sumChild">31,200원</strong>
                     </c:when>
                     <c:otherwise>
-                        <strong id="sumChild">240,000원</strong>
+                        <del>240,000원</del>
+                        <strong id="sumChild">192,000원</strong>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -336,9 +347,14 @@ request.setCharacterEncoding("UTF-8");
 <input type="hidden" name="totalDesc"   id="sendTotalDesc"
        value="어른 1매 · 청소년 1매 · 어린이 1매">
 
-</form>
+<!-- 날짜 정보도 그대로 다음 단계로 넘기고 싶을 경우 -->
+<input type="hidden" name="visitDate"  value="${visitDate}">
+<input type="hidden" name="payDate"    value="${payDate}">
+<input type="hidden" name="expireDate" value="${expireDate}">
 
-<!-- 기존 footer 유지 -->
+</form>
+</div>
+
 <div id="footer">
     <jsp:include page="include/footer.jsp"></jsp:include>
 </div>

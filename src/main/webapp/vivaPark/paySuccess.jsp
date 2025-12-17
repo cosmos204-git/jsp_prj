@@ -43,7 +43,7 @@ body{background:#f5f5f5;}
     font-size:13px;
     color:#666;
     line-height:1.6;
-    margin-bottom:20px;
+    margin-bottom:0px;
 }
 
 /* 구분선 */
@@ -93,6 +93,29 @@ body{background:#f5f5f5;}
     background:#ff7a00;
     color:#fff;
 }
+
+
+.container{
+    padding-bottom:0 !important;
+}
+
+.pay-box{
+    max-width:900px;
+    margin:40px auto 0;
+    background:#fff;
+    border-radius:10px;
+    padding:30px 40px 40px;
+    box-shadow:0 0 15px rgba(0,0,0,0.12);
+}
+
+.btn-confirm{
+    margin-bottom:0;
+}
+
+#footer{
+    margin-top:0 !important;
+}
+
 </style>
 </head>
 <body>

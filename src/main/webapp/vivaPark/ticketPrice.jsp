@@ -1,20 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
+<%@ page import="vivaParkDAO.TicketPriceDAO" %>
+<%@ page import="vivaParkDTO.TicketPriceDTO" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 
-
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VIVA PARK</title>
 <link rel="stylesheet" type="text/css"
-	href="http://192.168.10.73/html_prj/practice/vivatemplet.css" />
+	href="../include/vivatemplet.css" />
 
-<!-- 공지 가져오기 -->
-<!-- 2024 경주월드 -->
 <script src="https://www.gjw.co.kr/inc/gjw_2024/js/14jquery.min.js"></script>
 <link rel="stylesheet" type="text/css"
 	href="https://www.gjw.co.kr/inc/gjw_2024/bs/bootstrap.min.css?ver=1763706557">
@@ -24,7 +25,6 @@
 	href="https://www.gjw.co.kr/css/gjw_2024/reset.css?ver=1763706557">
 <link rel="stylesheet" type="text/css"
 	href="https://www.gjw.co.kr/css/gjw_2024/sub.css?ver=1763706557">
-
 
 <style>
 .subWrap {
@@ -39,7 +39,7 @@
 
 #title {
 	background-color: #00FF00;
-	height: 120px;
+	height: 50px;
 	font-size: 60px;
 	text-align: center;
 	padding: 20px;
@@ -55,8 +55,8 @@
 }
 
 .container {
-	height: auto;
-	margin-top: 100px;
+	height: 400px;
+	margin-top: 0px;
 }
 
 .nav-link:hover {
@@ -68,7 +68,7 @@
 }
 
 #miniHome {
-	height: 30px;
+	height: 10px;
 }
 
 .nav-item {
@@ -124,6 +124,46 @@
 	});
 </script>
 
+<%
+    TicketPriceDAO dao = TicketPriceDAO.getInstance();
+    List<TicketPriceDTO> priceList = null;
+    try {
+        priceList = dao.selectAllTicketPrice(); // 혹은 실제 메서드명
+        out.println("List size: " + priceList.size() + "<br>");
+    } catch(Exception e) {
+        out.println("Error: " + e.getMessage() + "<br>");
+        e.printStackTrace();
+    }
+
+    int dailyAdultPrice = 0, dailyTeenPrice = 0, dailyChildPrice = 0;
+    int annualAdultPrice = 0, annualTeenPrice = 0, annualChildPrice = 0;
+
+    if(priceList != null) {
+        for(TicketPriceDTO dto : priceList) {
+            out.println(dto.toString() + "<br>");
+            if("일반".equalsIgnoreCase(dto.getTicketName())) {
+                dailyAdultPrice = dto.getAdultPrice();
+                dailyTeenPrice = dto.getYouthPrice();
+                dailyChildPrice = dto.getKidsPrice();
+            } else if("연간".equalsIgnoreCase(dto.getTicketName())) {
+                annualAdultPrice = dto.getAdultPrice();
+                annualTeenPrice = dto.getYouthPrice();
+                annualChildPrice = dto.getKidsPrice();
+            }
+        }
+    }
+
+    request.setAttribute("dailyAdultPrice", dailyAdultPrice);
+    request.setAttribute("dailyTeenPrice", dailyTeenPrice);
+    request.setAttribute("dailyChildPrice", dailyChildPrice);
+    request.setAttribute("annualAdultPrice", annualAdultPrice);
+    request.setAttribute("annualTeenPrice", annualTeenPrice);
+    request.setAttribute("annualChildPrice", annualChildPrice);
+%>
+
+
+
+
 
 
 <title>티켓 요금</title>
@@ -133,7 +173,7 @@
         width: 100%;
         max-width: 1200px;
         margin: 0 auto;
-        padding: 50px 20px;
+        padding: 20px 20px;
         font-family: sans-serif; 
         color: #333;
     }
@@ -146,7 +186,7 @@
         width: 100%;
         height: 3px;
         background-color: #ff6b00; 
-        margin-bottom: 60px;
+        margin-bottom: 100px;
         border: none;
     }
 
@@ -189,20 +229,20 @@
         .ticket-cards-wrapper { flex-direction: column; align-items: center; }
         .ticket-card { width: 100%; }
     }
+    
 </style>
+<jsp:include page="include/vivatemplet_css.jsp"></jsp:include>
 </head>
+
+
+
 <body>
-<div class="wrap">
     <div id="closetop"></div>
     <div id="header">
         <jsp:include page="include/header.jsp"></jsp:include>
     </div>
     <jsp:include page="include/hamberger.jsp"></jsp:include>
 
-    <div class="container">
-
-		<!-- 메인 공간(비어있는 흰 배경 영역) -->
-		<div class="container">
 			<!-- 미니 메뉴바 시작 -->
 			<div id="inner">
 				<!-- 페이지 상단 여백 -->
@@ -211,7 +251,7 @@
 				<div id="miniMenu" style="margin: 0px auto; height: 30px">
 					<div>
 						<a href="#void"><img
-							src="http://192.168.10.72/html_prj/common/images/minihome.png"
+							src="../images/minihome.png"
 							id="miniHome"></a> |&nbsp;
 					</div>
 					<div class="miniMenuSub">
@@ -250,7 +290,6 @@
             <h3>이용권</h3>
         </div>
         
-        <hr class="title-divider">
 
         <div class="ticket-cards-wrapper">
             
@@ -260,19 +299,19 @@
                     <li class="price-item">
                         <span class="label">어른</span>
                         <span class="price">
-                            ${dailyAdultPrice}원 
+					    <fmt:formatNumber value="${dailyAdultPrice}" currencySymbol="" groupingUsed="true"/>원
                         </span>
                     </li>
                     <li class="price-item">
                         <span class="label">청소년</span>
                         <span class="price">
-                            ${dailyTeenPrice}원
+					    <fmt:formatNumber value="${dailyTeenPrice}" currencySymbol="" groupingUsed="true"/>원
                         </span>
                     </li>
                     <li class="price-item">
                         <span class="label">어린이</span>
                         <span class="price">
-                            ${dailyChildPrice}원
+					    <fmt:formatNumber value="${dailyChildPrice}" currencySymbol="" groupingUsed="true"/>원
                         </span>
                     </li>
                 </ul>
@@ -284,19 +323,19 @@
                     <li class="price-item">
                         <span class="label">어른</span>
                         <span class="price">
-                            ${annualAdultPrice}원
+					    <fmt:formatNumber value="${annualAdultPrice}" currencySymbol="" groupingUsed="true"/>원
                         </span>
                     </li>
                     <li class="price-item">
                         <span class="label">청소년</span>
                         <span class="price">
-                            ${annualTeenPrice}원
+					    <fmt:formatNumber value="${annualTeenPrice}" currencySymbol="" groupingUsed="true"/>원
                         </span>
                     </li>
                     <li class="price-item">
                         <span class="label">어린이</span>
                         <span class="price">
-                            ${annualChildPrice}원
+					    <fmt:formatNumber value="${annualChildPrice}" currencySymbol="" groupingUsed="true"/>원
                         </span>
                     </li>
                 </ul>
@@ -310,7 +349,7 @@
 
 				<div class="footer-top">
 					<img
-						src="http://192.168.10.73/html_prj/practice/images/vivaLog.png"
+						src="../images/vivaLog.png"
 						alt="VIVA PARK Logo" style="height: 50px;" />
 
 					<div class="footer-menu">
@@ -330,9 +369,6 @@
 
 			</div>
 		</div>
-	</div>
 
-</div>
-</div>
 </body>
 </html>

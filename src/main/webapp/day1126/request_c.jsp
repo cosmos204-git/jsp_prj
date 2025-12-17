@@ -232,8 +232,8 @@ $(function(){
 					<%
 					// 이전 페이지에서 사용된 값을 받을 수 없다.
 					String name2=request.getParameter("name");
-					%>>
-					<%= name %>님의 작업페이지!!!
+					%>
+					<%= name2 %>님의 작업페이지!!!
 				</div>
 				
 			</div>

@@ -3,7 +3,9 @@
 <!-- 다른 JSP에 구현된 기능을 사용하는 페이지 -->
 <%@ include file="include_b.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ include file="../fragement/loginChk.jsp" %>
+<%@ include file="../fragments/loginChk.jsp" %>
+
+<%@ include file="../fragments/siteProperty.jsp" %>
 
 <!DOCTYPE html>
 <html>
