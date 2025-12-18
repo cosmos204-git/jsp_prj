@@ -1,22 +1,115 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
+<%@ page import="vivaParkDAO.TicketPriceDAO" %>
+<%@ page import="vivaParkDAO.PromotionDAO" %>
+<%@ page import="vivaParkDTO.TicketPriceDTO" %>
+<%@ page import="vivaParkDTO.PromotionDTO" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%
-request.setCharacterEncoding("UTF-8");
+	request.setCharacterEncoding("UTF-8");
 
-String ticketType = request.getParameter("ticketType"); // daily or annual
-if(ticketType == null || ticketType.trim().length() == 0){
-    ticketType = "daily";
-}
-String visitDate  = request.getParameter("visitDate");   // 1일권용
-String payDate    = request.getParameter("payDate");     // 연간권 결제일
-String expireDate = request.getParameter("expireDate");  // 연간권 만료일
+    String promPayAgency=request.getParameter("promPayAgency");
+	
 
-pageContext.setAttribute("ticketType", ticketType);
-pageContext.setAttribute("visitDate", visitDate);
-pageContext.setAttribute("payDate", payDate);
-pageContext.setAttribute("expireDate", expireDate);
+	if ( "비씨".equals(promPayAgency) ) {  // 04 삼성카드, 01 비씨카드, 99 일반카드
+		promPayAgency="비씨카드";
+	} else if ("삼성".equals(promPayAgency)) {
+		promPayAgency="삼성카드";
+	} else  {
+		promPayAgency="일반";
+	}
+
+	
+    // 1. ticketType 매핑 (1/2 -> daily/annual)
+    String ticketType = request.getParameter("ticketType"); // "daily", "annual", "1", "2" 중 하나
+    if(ticketType == null || ticketType.trim().length() == 0){
+        ticketType = "daily";
+    }else if("1".equals(ticketType)){
+        ticketType = "daily";
+    }else if("2".equals(ticketType)){
+        ticketType = "annual";
+    }
+
+    // 날짜 파라미터 (reserv.jsp에서 넘어온 값)
+    String visitDate  = request.getParameter("visitDate");   // 1일권 방문 예정일
+    String payDate    = request.getParameter("payDate");     // 연간권 결제일
+    String expireDate = request.getParameter("expireDate");  // 연간권 만료일
+
+    // 2. DB에서 가격 조회 (정가)
+    TicketPriceDAO tDao = TicketPriceDAO.getInstance();
+    List<TicketPriceDTO> priceList = tDao.selectAllTicketPrice();
+
+    int dailyAdultPrice = 0, dailyTeenAgerPrice = 0, dailyKidsPrice = 0;
+    int annualAdultPrice = 0, annualTeenAgerPrice = 0, annualKidsPrice = 0;
+
+    if(priceList != null){
+        for(TicketPriceDTO dto : priceList){
+            // ticketType 컬럼이 "1"=1일권, "2"=연간권이라고 가정
+            if("1".equals(dto.getTicketType())){          // 1일권
+                dailyAdultPrice    = dto.getAdultPrice();
+                dailyTeenAgerPrice = dto.getTeenAgerPrice();
+                dailyKidsPrice     = dto.getKidsPrice();
+            }else if("2".equals(dto.getTicketType())){    // 연간권
+                annualAdultPrice    = dto.getAdultPrice();
+                annualTeenAgerPrice = dto.getTeenAgerPrice();
+                annualKidsPrice     = dto.getKidsPrice();
+            }
+        }
+    }
+
+    // 3. 프로모션 할인율 조회 (예: 비씨카드 기준 할인율 사용)
+    
+    
+    
+    PromotionDAO pDao = PromotionDAO.getInstance();
+    List<PromotionDTO> promList = pDao.selectAllPromotion();
+    int promoDiscount = 0; // percent
+
+    if(promList != null){
+        for(PromotionDTO p : promList){
+            // 원하는 기준 카드사 지정 (예: "비씨")
+            
+            System.out.println(promPayAgency);
+            if(promPayAgency.equals(p.getPromPayAgency())){
+                promoDiscount = p.getDiscount(); // 예: 15, 20 등
+                break;
+            }
+        }
+    }
+
+    // 4. 할인 가격 계산 (정수 내림)
+    int dailyAdultSale    = dailyAdultPrice    * (100 - promoDiscount) / 100;
+    int dailyTeenAgerSale = dailyTeenAgerPrice * (100 - promoDiscount) / 100;
+    int dailyKidsSale     = dailyKidsPrice     * (100 - promoDiscount) / 100;
+
+    int annualAdultSale    = annualAdultPrice    * (100 - promoDiscount) / 100;
+    int annualTeenAgerSale = annualTeenAgerPrice * (100 - promoDiscount) / 100;
+    int annualKidsSale     = annualKidsPrice     * (100 - promoDiscount) / 100;
+
+    // EL에서 사용하도록 저장
+    pageContext.setAttribute("ticketType", ticketType);
+    pageContext.setAttribute("visitDate", visitDate);
+    pageContext.setAttribute("payDate", payDate);
+    pageContext.setAttribute("expireDate", expireDate);
+
+    // 정가
+    pageContext.setAttribute("dailyAdultPrice",     dailyAdultPrice);
+    pageContext.setAttribute("dailyTeenAgerPrice",  dailyTeenAgerPrice);
+    pageContext.setAttribute("dailyKidsPrice",      dailyKidsPrice);
+    pageContext.setAttribute("annualAdultPrice",    annualAdultPrice);
+    pageContext.setAttribute("annualTeenAgerPrice", annualTeenAgerPrice);
+    pageContext.setAttribute("annualKidsPrice",     annualKidsPrice);
+
+    // 할인가
+    pageContext.setAttribute("dailyAdultSale",     dailyAdultSale);
+    pageContext.setAttribute("dailyTeenAgerSale",  dailyTeenAgerSale);
+    pageContext.setAttribute("dailyKidsSale",      dailyKidsSale);
+    pageContext.setAttribute("annualAdultSale",    annualAdultSale);
+    pageContext.setAttribute("annualTeenAgerSale", annualTeenAgerSale);
+    pageContext.setAttribute("annualKidsSale",     annualKidsSale);
+    pageContext.setAttribute("promoDiscount",      promoDiscount);
 %>
 
 <!DOCTYPE html>
@@ -142,15 +235,32 @@ pageContext.setAttribute("expireDate", expireDate);
 <jsp:include page="include/vivatemplet_css.jsp"></jsp:include>
 
 <script>
-    // 정가
+    // 정가: DB에서 넘겨받은 값을 EL로 주입
     var basePrices = {
-        daily:  { adult: 64000,  teen: 56000,  child: 48000 },
-        annual: { adult: 320000, teen: 280000, child: 240000 }
+        daily:  {
+            adult: ${dailyAdultPrice},
+            teen:  ${dailyTeenAgerPrice},
+            kids:  ${dailyKidsPrice}
+        },
+        annual: {
+            adult: ${annualAdultPrice},
+            teen:  ${annualTeenAgerPrice},
+            kids:  ${annualKidsPrice}
+        }
     };
-    // 할인 가격 (예시 - 필요시 서버 데이터와 연동)
+
+    // 할인 가격: 프로모션 할인율 반영
     var salePrices = {
-        daily:  { adult: 40300,  teen: 35850,  child: 31200 },
-        annual: { adult: 256000, teen: 224000, child: 192000 }
+        daily:  {
+            adult: ${dailyAdultSale},
+            teen:  ${dailyTeenAgerSale},
+            kids:  ${dailyKidsSale}
+        },
+        annual: {
+            adult: ${annualAdultSale},
+            teen:  ${annualTeenAgerSale},
+            kids:  ${annualKidsSale}
+        }
     };
 
     function formatNumber(num) {
@@ -162,30 +272,30 @@ pageContext.setAttribute("expireDate", expireDate);
 
         var qtyAdult = parseInt(document.getElementById("qtyAdult").value) || 0;
         var qtyTeen  = parseInt(document.getElementById("qtyTeen").value)  || 0;
-        var qtyChild = parseInt(document.getElementById("qtyChild").value) || 0;
+        var qtyKids  = parseInt(document.getElementById("qtyKids").value)  || 0;
 
         var priceAdult = salePrices[type].adult * qtyAdult;
         var priceTeen  = salePrices[type].teen  * qtyTeen;
-        var priceChild = salePrices[type].child * qtyChild;
+        var priceKids  = salePrices[type].kids  * qtyKids;
 
         document.getElementById("sumAdult").innerText = formatNumber(priceAdult) + "원";
         document.getElementById("sumTeen").innerText  = formatNumber(priceTeen)  + "원";
-        document.getElementById("sumChild").innerText = formatNumber(priceChild) + "원";
+        document.getElementById("sumKids").innerText  = formatNumber(priceKids)  + "원";
 
-        var total = priceAdult + priceTeen + priceChild;
+        var total = priceAdult + priceTeen + priceKids;
         document.getElementById("totalPrice").innerText = formatNumber(total) + "원";
 
         var desc = [];
-        if(qtyAdult  > 0) desc.push("어른 "   + qtyAdult  + "매");
-        if(qtyTeen   > 0) desc.push("청소년 " + qtyTeen   + "매");
-        if(qtyChild  > 0) desc.push("어린이 " + qtyChild  + "매");
+        if(qtyAdult > 0) desc.push("어른 "   + qtyAdult + "매");
+        if(qtyTeen  > 0) desc.push("청소년 " + qtyTeen  + "매");
+        if(qtyKids  > 0) desc.push("어린이 " + qtyKids  + "매");
         var descText = desc.join(" · ");
         document.getElementById("totalDesc").innerText = descText;
 
         document.getElementById("sendTicketType").value = type;
         document.getElementById("sendQtyAdult").value   = qtyAdult;
         document.getElementById("sendQtyTeen").value    = qtyTeen;
-        document.getElementById("sendQtyChild").value   = qtyChild;
+        document.getElementById("sendQtyKids").value    = qtyKids;
         document.getElementById("sendTotalPrice").value = total;
         document.getElementById("sendTotalDesc").value  = descText;
     }
@@ -196,9 +306,9 @@ pageContext.setAttribute("expireDate", expireDate);
 
         var qtyAdult = parseInt(document.getElementById("qtyAdult").value) || 0;
         var qtyTeen  = parseInt(document.getElementById("qtyTeen").value)  || 0;
-        var qtyChild = parseInt(document.getElementById("qtyChild").value) || 0;
+        var qtyKids  = parseInt(document.getElementById("qtyKids").value)  || 0;
 
-        var totalNow = qtyAdult + qtyTeen + qtyChild;
+        var totalNow = qtyAdult + qtyTeen + qtyKids;
 
         if(delta > 0){
             if(totalNow >= 10){
@@ -242,6 +352,7 @@ pageContext.setAttribute("expireDate", expireDate);
                     </c:if>
                 </c:otherwise>
             </c:choose>
+            <span style="font-size:13px;color:#ffc;"> (기본 프로모션 할인율: <c:out value="${promoDiscount}"/>%)</span>
         </div>
 
         <input type="hidden" id="ticketType" value="${ticketType}" />
@@ -259,12 +370,12 @@ pageContext.setAttribute("expireDate", expireDate);
             <div class="price-col">
                 <c:choose>
                     <c:when test="${ticketType eq 'daily'}">
-                        <del>64,000원</del>
-                        <strong id="sumAdult">40,300원</strong>
+                        <del><c:out value="${dailyAdultPrice}" />원</del>
+                        <strong id="sumAdult"><c:out value="${dailyAdultSale}" />원</strong>
                     </c:when>
                     <c:otherwise>
-                        <del>320,000원</del>
-                        <strong id="sumAdult">256,000원</strong>
+                        <del><c:out value="${annualAdultPrice}" />원</del>
+                        <strong id="sumAdult"><c:out value="${annualAdultSale}" />원</strong>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -283,12 +394,12 @@ pageContext.setAttribute("expireDate", expireDate);
             <div class="price-col">
                 <c:choose>
                     <c:when test="${ticketType eq 'daily'}">
-                        <del>56,000원</del>
-                        <strong id="sumTeen">35,850원</strong>
+                        <del><c:out value="${dailyTeenAgerPrice}" />원</del>
+                        <strong id="sumTeen"><c:out value="${dailyTeenAgerSale}" />원</strong>
                     </c:when>
                     <c:otherwise>
-                        <del>280,000원</del>
-                        <strong id="sumTeen">224,000원</strong>
+                        <del><c:out value="${annualTeenAgerPrice}" />원</del>
+                        <strong id="sumTeen"><c:out value="${annualTeenAgerSale}" />원</strong>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -299,20 +410,20 @@ pageContext.setAttribute("expireDate", expireDate);
             <div class="person-label">어린이</div>
             <div class="qty-control">
                 <button type="button" class="qty-btn"
-                        onclick="changeQty('qtyChild', -1)">－</button>
-                <input type="text" id="qtyChild" class="qty-input" value="1" readonly>
+                        onclick="changeQty('qtyKids', -1)">－</button>
+                <input type="text" id="qtyKids" class="qty-input" value="1" readonly>
                 <button type="button" class="qty-btn"
-                        onclick="changeQty('qtyChild', 1)">＋</button>
+                        onclick="changeQty('qtyKids', 1)">＋</button>
             </div>
             <div class="price-col">
                 <c:choose>
                     <c:when test="${ticketType eq 'daily'}">
-                        <del>48,000원</del>
-                        <strong id="sumChild">31,200원</strong>
+                        <del><c:out value="${dailyKidsPrice}" />원</del>
+                        <strong id="sumKids"><c:out value="${dailyKidsSale}" />원</strong>
                     </c:when>
                     <c:otherwise>
-                        <del>240,000원</del>
-                        <strong id="sumChild">192,000원</strong>
+                        <del><c:out value="${annualKidsPrice}" />원</del>
+                        <strong id="sumKids"><c:out value="${annualKidsSale}" />원</strong>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -328,7 +439,7 @@ pageContext.setAttribute("expireDate", expireDate);
                 </div>
             </div>
             <div class="summary-price" id="totalPrice">
-                107,350원
+                <!-- JS에서 재계산 -->
             </div>
         </div>
 
@@ -342,12 +453,12 @@ pageContext.setAttribute("expireDate", expireDate);
 <input type="hidden" name="ticketType"  id="sendTicketType"  value="${ticketType}">
 <input type="hidden" name="qtyAdult"    id="sendQtyAdult"    value="1">
 <input type="hidden" name="qtyTeen"     id="sendQtyTeen"     value="1">
-<input type="hidden" name="qtyChild"    id="sendQtyChild"    value="1">
-<input type="hidden" name="totalPrice"  id="sendTotalPrice"  value="107350">
-<input type="hidden" name="totalDesc"   id="sendTotalDesc"
-       value="어른 1매 · 청소년 1매 · 어린이 1매">
+<input type="hidden" name="qtyKids"     id="sendQtyKids"     value="1">
+<input type="hidden" name="totalPrice"  id="sendTotalPrice"  value="0">
+<input type="hidden" name="totalDesc"   id="sendTotalDesc"   value="어른 1매 · 청소년 1매 · 어린이 1매">
+<input type="hidden" name="promPayAgency" value="<%= promPayAgency %>">
 
-<!-- 날짜 정보도 그대로 다음 단계로 넘기고 싶을 경우 -->
+<!-- 날짜 정보도 그대로 payProcess.jsp로 넘김 -->
 <input type="hidden" name="visitDate"  value="${visitDate}">
 <input type="hidden" name="payDate"    value="${payDate}">
 <input type="hidden" name="expireDate" value="${expireDate}">

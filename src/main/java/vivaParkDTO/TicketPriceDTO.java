@@ -1,19 +1,21 @@
 package vivaParkDTO;
 
 public class TicketPriceDTO {
-	private int ticketNum, adultPrice, youthPrice, kidsPrice;
-	private String ticketName;
+	private int ticketNum, adultPrice, teenAgerPrice, kidsPrice;
+	private String ticketType, ticketName;
 	
 	public TicketPriceDTO() {
 		super();
 	}
 
-	public TicketPriceDTO(int ticketNum, int adultPrice, int youthPrice, int kidsPrice, String ticketName) {
+	public TicketPriceDTO(int ticketNum, int adultPrice, int teenAgerPrice, int kidsPrice, String ticketType,
+			String ticketName) {
 		super();
 		this.ticketNum = ticketNum;
 		this.adultPrice = adultPrice;
-		this.youthPrice = youthPrice;
+		this.teenAgerPrice = teenAgerPrice;
 		this.kidsPrice = kidsPrice;
+		this.ticketType = ticketType;
 		this.ticketName = ticketName;
 	}
 
@@ -33,12 +35,12 @@ public class TicketPriceDTO {
 		this.adultPrice = adultPrice;
 	}
 
-	public int getYouthPrice() {
-		return youthPrice;
+	public int getTeenAgerPrice() {
+		return teenAgerPrice;
 	}
 
-	public void setYouthPrice(int youthPrice) {
-		this.youthPrice = youthPrice;
+	public void setTeenAgerPrice(int teenAgerPrice) {
+		this.teenAgerPrice = teenAgerPrice;
 	}
 
 	public int getKidsPrice() {
@@ -47,6 +49,14 @@ public class TicketPriceDTO {
 
 	public void setKidsPrice(int kidsPrice) {
 		this.kidsPrice = kidsPrice;
+	}
+
+	public String getTicketType() {
+		return ticketType;
+	}
+
+	public void setTicketType(String ticketType) {
+		this.ticketType = ticketType;
 	}
 
 	public String getTicketName() {
@@ -59,12 +69,11 @@ public class TicketPriceDTO {
 
 	@Override
 	public String toString() {
-		return "TicketPriceDTO [ticketNum=" + ticketNum + ", adultPrice=" + adultPrice + ", youthPrice=" + youthPrice
-				+ ", kidsPrice=" + kidsPrice + ", ticketName=" + ticketName + "]";
+		return "TicketPriceDTO [ticketNum=" + ticketNum + ", adultPrice=" + adultPrice + ", teenAgerPrice="
+				+ teenAgerPrice + ", kidsPrice=" + kidsPrice + ", ticketType=" + ticketType + ", ticketName="
+				+ ticketName + "]";
 	}
-	
-	
-	
+
 	
 	
 }

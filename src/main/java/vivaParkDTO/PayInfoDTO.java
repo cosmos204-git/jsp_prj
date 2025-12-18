@@ -2,7 +2,7 @@ package vivaParkDTO;
 
 public class PayInfoDTO {
 	private int payinfoNum, payNum, cardNum1, cardNum2, cardNum3, cardNum4, cvc, cardPass, installment;
-	private String payAgency, payMethod, expiration;
+	private String cardCode, payAgency, payMethod, expiration;
 	
 	
 	public PayInfoDTO() {
@@ -11,7 +11,7 @@ public class PayInfoDTO {
 
 
 	public PayInfoDTO(int payinfoNum, int payNum, int cardNum1, int cardNum2, int cardNum3, int cardNum4, int cvc,
-			int cardPass, int installment, String payAgency, String payMethod, String expiration) {
+			int cardPass, int installment, String cardCode, String payAgency, String payMethod, String expiration) {
 		super();
 		this.payinfoNum = payinfoNum;
 		this.payNum = payNum;
@@ -22,6 +22,7 @@ public class PayInfoDTO {
 		this.cvc = cvc;
 		this.cardPass = cardPass;
 		this.installment = installment;
+		this.cardCode = cardCode;
 		this.payAgency = payAgency;
 		this.payMethod = payMethod;
 		this.expiration = expiration;
@@ -118,6 +119,16 @@ public class PayInfoDTO {
 	}
 
 
+	public String getCardCode() {
+		return cardCode;
+	}
+
+
+	public void setCardCode(String cardCode) {
+		this.cardCode = cardCode;
+	}
+
+
 	public String getPayAgency() {
 		return payAgency;
 	}
@@ -152,10 +163,10 @@ public class PayInfoDTO {
 	public String toString() {
 		return "PayInfoDTO [payinfoNum=" + payinfoNum + ", payNum=" + payNum + ", cardNum1=" + cardNum1 + ", cardNum2="
 				+ cardNum2 + ", cardNum3=" + cardNum3 + ", cardNum4=" + cardNum4 + ", cvc=" + cvc + ", cardPass="
-				+ cardPass + ", installment=" + installment + ", payAgency=" + payAgency + ", payMethod=" + payMethod
-				+ ", expiration=" + expiration + "]";
+				+ cardPass + ", installment=" + installment + ", cardCode=" + cardCode + ", payAgency=" + payAgency
+				+ ", payMethod=" + payMethod + ", expiration=" + expiration + "]";
 	}
-	
-	
+
+
 	
 }

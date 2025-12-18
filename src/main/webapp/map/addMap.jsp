@@ -10,7 +10,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 
-<title>JSP템플릿</title>
+<title>식당 등록</title>
 <link rel="shortcut icon" href="http://192.168.10.79/jsp_prj/common/images/favicon.ico">
 
 <script src="http://192.168.10.79/jsp_prj/common/js/color-modes.js"></script>
@@ -113,8 +113,88 @@
 
 <script type="text/javascript">
 $(function(){
-	
+	$("#btnAdd").click(function(){
+		//입력값에 대한 유효성 검증
+		var rest_name=$("#rest_name").val();
+		var param={
+				rest_name : $("#rest_name").val(),
+				menu : $("#menu").val(),
+				info : $("#rest_name").val(),
+				lat : $("#lat").val(),
+				lng : $("lng").val()
+		}
+		$.ajax({ 
+				url:"addMapProcess.jsp",
+				type:"get",
+				data: param,
+				dataType: "JSON",
+				error: function( xhr ){
+					alert("식당 등록 실패!!");
+					console.log( xhr.status )
+				},
+				success: function( jsonObj ){
+					var msg=rest_name+"등록을 실패하였습니다.";
+					if ( jsonObj.resultFlag ){
+						msg=rest_name+"을 성공적으로 추가하였습니다.";
+						
+						$("rest_name").val("");
+						$("menu").val("");
+						$("info").val("");
+						$("lat").val("");
+						$("lng").val("");
+						
+						$("vLat").text("");
+						$("vLng").text("");
+						
+					}
+					alert( msg );
+				}
+			
+		}); //ajax
+		
+	)};//click
 });//ready
+
+</script>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=5d565f45ef1cf5f19b2cea43b065c827"></script>
+<script>
+window.onload=function(){
+var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+    mapOption = { 
+        center: new kakao.maps.LatLng(37.504728468139334, 127.05316112695829), // 지도의 중심좌표
+        level: 3 // 지도의 확대 레벨
+    };
+
+var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+// 지도를 클릭한 위치에 표출할 마커입니다
+var marker = new kakao.maps.Marker({ 
+    // 지도 중심좌표에 마커를 생성합니다 
+    position: map.getCenter() 
+}); 
+// 지도에 마커를 표시합니다
+marker.setMap(map);
+
+// 지도에 클릭 이벤트를 등록합니다
+// 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
+kakao.maps.event.addListener(map, 'click', function(mouseEvent) {        
+    
+    // 클릭한 위도, 경도 정보를 가져옵니다 
+    var latlng = mouseEvent.latLng; 
+    
+    // 마커 위치를 클릭한 위치로 옮깁니다
+    marker.setPosition(latlng);
+
+    $("vLat").text(latlng.getLat());
+    $("vLng").text(latlng.getLng());
+    
+	$("#lat").val(latlng.getLat());
+	$("#lng").val(latlng.getLng());
+    
+});
+}//on load
+
 
 </script>
 
@@ -230,29 +310,43 @@ $(function(){
 			<!-- START THE FEATURETTES -->
 			<hr class="featurette-divider">
 			<div class="row featurette">
-				<div class="col-md-7">
-					사용자 메인 페이지
-					사용자에게 제공할 컨텐츠...
-					<c:choose>
-					<c:when test="${ not empty sessionScope.userId }">
-					<br>
-					<img src="${ CommonURL }/upload/${sessionScope.userProfile}" 
-					id="preview" style="width: 100px:height:100px; border-radius:100px"/>
-					<br>
-					<c:out value="${ userId }"/>  
-					<a href="${ CommonURL }/mypage/mypage.jsp"><c:out value="${ userName}"/></a>님 안녕하세요?<br>
-					 
-					<a href="${ CommonURL }/login/logout.jsp">로그아웃</a>
-					<a href="${ CommonURL }/map/mapList.jsp">등록한 장소</a>
-					<br>
-					</c:when>
-					<c:otherwise>
-					<a href="login/loginFrm.jsp">로그인</a>
-					</c:otherwise>
-					</c:choose>
-					<a href="${ CommonURL }/board/boardList.jsp">게시판</a>
-				</div>
+				<div>
+				<h2>맛집 등록</h2>
+				<div id="map" style="width:100%;height:350px;"></div>
+				<table>
+				<tr>
+					<td>식당명</td>
+					<td><input type="text" name="rest_name" id="rest_name"
+						style="width:350px"></td>
+				 </tr>
+				 <tr>						
+					<td>대표메뉴</td>
+					<td><input type="text" name="menu" id="menu"
+						style="width:350px"></td>
+				  </tr>
+				  <tr>
+					<td>상세정보</td>
+					<!-- TextArea 태그 사이에는 절대 공란을 두지 말라 -->
+					<td><textarea name="info" id="info" 
+						style="width:350px;height:150px"></textarea></td>
+				</tr>
+				<tr>
+					<td>위도/경도</td>
+					<td><span id="vLat"></span>/<span id="vLng"></span>
+					<input type="hidden" name="lat" id="lat"/>
+					<input type="hidden" name="lng" id="lnt"/>
+					</td>
+				 </tr>
 				
+				  <tr>
+					<td colspan="2" style="text-align:center">
+					<input type="button" value="등록" class="btn btn-primary btn-sm">
+					<a href="mapList.jsp" class="btn btn-info btn-sm">리스트</a>
+					</td>
+				  </tr>
+				
+				</table>
+				</div>				
 			</div>
 			<hr class="featurette-divider">
 			<!-- /END THE FEATURETTES -->

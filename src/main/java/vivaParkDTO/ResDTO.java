@@ -1,18 +1,18 @@
 package vivaParkDTO;
 
 public class ResDTO {
-	private int ticketNum, adultPrice, youthPrice, kidsPrice;
+	private int ticketNum, adultPrice, teenAgerPrice, kidsPrice;
 	private String ticketName;
 	
 	public ResDTO() {
 		super();
 	}
 
-	public ResDTO(int ticketNum, int adultPrice, int youthPrice, int kidsPrice, String ticketName) {
+	public ResDTO(int ticketNum, int adultPrice, int teenAgerPrice, int kidsPrice, String ticketName) {
 		super();
 		this.ticketNum = ticketNum;
 		this.adultPrice = adultPrice;
-		this.youthPrice = youthPrice;
+		this.teenAgerPrice = teenAgerPrice;
 		this.kidsPrice = kidsPrice;
 		this.ticketName = ticketName;
 	}
@@ -33,12 +33,12 @@ public class ResDTO {
 		this.adultPrice = adultPrice;
 	}
 
-	public int getYouthPrice() {
-		return youthPrice;
+	public int getTeenAgerPrice() {
+		return teenAgerPrice;
 	}
 
-	public void setYouthPrice(int youthPrice) {
-		this.youthPrice = youthPrice;
+	public void setTeenAgerPrice(int teenAgerPrice) {
+		this.teenAgerPrice = teenAgerPrice;
 	}
 
 	public int getKidsPrice() {
@@ -59,10 +59,10 @@ public class ResDTO {
 
 	@Override
 	public String toString() {
-		return "ResDTO [ticketNum=" + ticketNum + ", adultPrice=" + adultPrice + ", youthPrice=" + youthPrice
+		return "ResDTO [ticketNum=" + ticketNum + ", adultPrice=" + adultPrice + ", teenAgerPrice=" + teenAgerPrice
 				+ ", kidsPrice=" + kidsPrice + ", ticketName=" + ticketName + "]";
 	}
-	
+
 	
 	
 }

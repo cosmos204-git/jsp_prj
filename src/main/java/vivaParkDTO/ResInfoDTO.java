@@ -3,7 +3,7 @@ package vivaParkDTO;
 import java.sql.Date;
 
 public class ResInfoDTO {
-	private int adultCnt, youthCnt, kidsCnt, totalPrice, prom_num, discount;
+	private int adultCnt, teenAgerCnt, kidsCnt, totalPrice, prom_num, discount;
 	private Date resDate, useDate;
 	private String prom_pay_agency;
 
@@ -11,11 +11,11 @@ public class ResInfoDTO {
 		super();
 	}
 
-	public ResInfoDTO(int adultCnt, int youthCnt, int kidsCnt, int totalPrice, int prom_num, int discount, Date resDate,
-			Date useDate, String prom_pay_agency) {
+	public ResInfoDTO(int adultCnt, int teenAgerCnt, int kidsCnt, int totalPrice, int prom_num, int discount,
+			Date resDate, Date useDate, String prom_pay_agency) {
 		super();
 		this.adultCnt = adultCnt;
-		this.youthCnt = youthCnt;
+		this.teenAgerCnt = teenAgerCnt;
 		this.kidsCnt = kidsCnt;
 		this.totalPrice = totalPrice;
 		this.prom_num = prom_num;
@@ -33,12 +33,12 @@ public class ResInfoDTO {
 		this.adultCnt = adultCnt;
 	}
 
-	public int getYouthCnt() {
-		return youthCnt;
+	public int getTeenAgerCnt() {
+		return teenAgerCnt;
 	}
 
-	public void setYouthCnt(int youthCnt) {
-		this.youthCnt = youthCnt;
+	public void setTeenAgerCnt(int teenAgerCnt) {
+		this.teenAgerCnt = teenAgerCnt;
 	}
 
 	public int getKidsCnt() {
@@ -99,9 +99,9 @@ public class ResInfoDTO {
 
 	@Override
 	public String toString() {
-		return "ResInfoDTO [adultCnt=" + adultCnt + ", youthCnt=" + youthCnt + ", kidsCnt=" + kidsCnt + ", totalPrice="
-				+ totalPrice + ", prom_num=" + prom_num + ", discount=" + discount + ", resDate=" + resDate
-				+ ", useDate=" + useDate + ", prom_pay_agency=" + prom_pay_agency + "]";
+		return "ResInfoDTO [adultCnt=" + adultCnt + ", teenAgerCnt=" + teenAgerCnt + ", kidsCnt=" + kidsCnt
+				+ ", totalPrice=" + totalPrice + ", prom_num=" + prom_num + ", discount=" + discount + ", resDate="
+				+ resDate + ", useDate=" + useDate + ", prom_pay_agency=" + prom_pay_agency + "]";
 	}
 
 	

@@ -37,10 +37,10 @@
     int annualAdult = 0;
 
     for(TicketPriceDTO t : tList){
-        // DB에 ticket_name이 'daily/annual' 이거나 '일반/연간' 등으로 저장되어 있다고 가정
-        if("daily".equalsIgnoreCase(t.getTicketName()) || "일반".equals(t.getTicketName())){
+        // DB에 ticket_type 1 일반, 2 연간
+        if("1".equalsIgnoreCase(t.getTicketType())) {
             dailyAdult = t.getAdultPrice();
-        }else if("annual".equalsIgnoreCase(t.getTicketName()) || "연간".equals(t.getTicketName())){
+        }else if("2".equalsIgnoreCase(t.getTicketType())){
             annualAdult = t.getAdultPrice();
         }
     }
@@ -54,9 +54,9 @@
     int normalDiscount = 0;         // 일반카드(할인 없음)
 
     for(PromotionDTO p : pList){
-        if("비씨".equals(p.getPromPayAgency())){
+        if("비씨카드".equals(p.getPromPayAgency())){  //01. 비씨카드
             bcDiscount = p.getDiscount();
-        }else if("삼성".equals(p.getPromPayAgency())){
+        }else if("삼성카드".equals(p.getPromPayAgency())){ //04. 삼성카드
             samsungDiscount = p.getDiscount();
         }
     }
@@ -266,13 +266,15 @@
     }
 
     // 예매 버튼 공통 처리
-    function submitReserve(tab) {
+    function submitReserve(tab, cardCode) {
         const form = document.getElementById('reserveForm');
         const ticketTypeHidden = document.getElementById('ticketTypeHidden');
         const visitDateHidden  = document.getElementById('visitDateHidden');
         const payDateHidden    = document.getElementById('payDateHidden');
         const expireDateHidden = document.getElementById('expireDateHidden');
 
+        const promPayAgencyHidden = document.getElementById('promPayAgencyHidden');
+        payCardCodeHidden.value = cardCode;
         ticketTypeHidden.value = tab; // daily / annual
 
         if (tab === 'daily') {
@@ -340,6 +342,9 @@
                 <input type="hidden" name="payDate"    id="payDateHidden">
                 <input type="hidden" name="expireDate" id="expireDateHidden">
 
+                <input type="hidden" name="payCardCode" id="payCardCodeHidden">
+                
+                
                 <!-- 탭 버튼 -->
                 <div class="tab-buttons">
                     <img 
@@ -406,7 +411,7 @@
                         </div>
                         <button class="detail-btn" type="button">상세보기</button>
                         <button class="reserve-btn" type="button"
-                                onclick="submitReserve('${currentTab}')">
+                                onclick="submitReserve('${currentTab}', '비씨')">
                             예매하기
                         </button>
                     </div>
@@ -448,7 +453,7 @@
                         </div>
                         <button class="detail-btn" type="button">상세보기</button>
                         <button class="reserve-btn" type="button"
-                                onclick="submitReserve('${currentTab}')">
+                                onclick="submitReserve('${currentTab}', '삼성')">
                             예매하기
                         </button>
                     </div>
@@ -479,9 +484,10 @@
                                 <fmt:formatNumber value="${normalPrice}" groupingUsed="true"/>원
                             </strong>~
                         </div>
+                        
                         <button class="detail-btn" type="button">상세보기</button>
                         <button class="reserve-btn" type="button"
-                                onclick="submitReserve('${currentTab}')">
+                                onclick="submitReserve('${currentTab}', '일반')">
                             예매하기
                         </button>
                     </div>

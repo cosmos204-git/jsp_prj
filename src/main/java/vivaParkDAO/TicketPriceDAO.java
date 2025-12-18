@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import vivaParkDAO.DbConn;
 import vivaParkDTO.TicketPriceDTO;
 
 public class TicketPriceDAO {
@@ -40,7 +39,7 @@ public class TicketPriceDAO {
 			//3.Connection 얻기
 				con=dbCon.getConn();
 			//4.쿼리문 생성객체 얻기
-				String selectTicketPrices="select ticket_name, adult_price, kids_price, baby_price from ticket";
+				String selectTicketPrices="select ticket_type, ticket_name, adult_price, teenager_price, kids_price from ticket";
 				pstmt=con.prepareStatement(selectTicketPrices);
 			//5.바인드변수 값 설정
 			//6.조회결과 얻기
@@ -49,10 +48,11 @@ public class TicketPriceDAO {
 				
 				while( rs.next() ) {
 					tpDTO=new TicketPriceDTO();
+					tpDTO.setTicketType(rs.getString("ticket_type"));
 					tpDTO.setTicketName(rs.getString("ticket_name"));
 					tpDTO.setAdultPrice(rs.getInt("adult_price"));
+					tpDTO.setTeenAgerPrice(rs.getInt("teenager_price"));
 					tpDTO.setKidsPrice(rs.getInt("kids_price"));
-					tpDTO.setYouthPrice(rs.getInt("baby_price"));
 					list.add(tpDTO);
 				}//end while
 				

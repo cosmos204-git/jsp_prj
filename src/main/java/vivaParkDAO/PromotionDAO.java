@@ -6,9 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import vivaParkDAO.DbConn;
 import vivaParkDTO.PromotionDTO;
-import vivaParkDTO.TicketPriceDTO;
 
 
 
@@ -40,7 +38,7 @@ public class PromotionDAO {
 	            dto.setPromNum(rs.getInt("prom_num"));
 	            dto.setPromPayAgency(rs.getString("prom_pay_agency")); // 신한, 국민, 우리, 삼성 등
 	            dto.setDiscount(rs.getInt("discount"));                // 15, 20, ...
-	                list.add(dto);
+	              list.add(dto);
 	            }
 	        } finally {
 	            dbCon.dbClose(rs, pstmt, con);

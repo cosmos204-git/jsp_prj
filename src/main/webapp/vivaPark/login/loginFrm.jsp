@@ -122,7 +122,7 @@ $(function(){
 <body class="d-flex align-items-center py-4 bg-body-tertiary">
 
 	<main class="form-signin w-100 m-auto">
-		<form id="loginFrm" name="loginFrm" action="${ CommonURL }/login/loginFrmProcess.jsp" method="post">
+		<form id="loginFrm" name="loginFrm" action="http://localhost/jsp_prj/vivaPark/login/loginFrmProcess.jsp" method="post">
 			<img class="mb-4" src="${ CommonURL }/common/images/sist.png"
 				alt="" >
 			<h1 class="h3 mb-3 fw-normal">로그인</h1>
