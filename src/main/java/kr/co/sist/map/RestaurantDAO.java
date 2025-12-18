@@ -1,6 +1,5 @@
 package kr.co.sist.map;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,7 +8,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import kr.co.sist.board.BoardDTO;
 import kr.co.sist.dao.DbConn;
 
 public class RestaurantDAO {
@@ -93,7 +91,7 @@ public class RestaurantDAO {
 			con=dbCon.getConn();
 		//4.쿼리문 생성객체 얻기
 			String insertRestaurant
-			="insert into restaurant(rest_num, id, rest_name, menu, info, lat, lng ) values( seq_rest.nextval,?,?,?,?,?,?)";
+			="insert into restaurant(rest_num, id, rest_name, menu, info, lat, lng ) values( seq_rest.nextval,?,?,?,?,?,? )";
 			pstmt=con.prepareStatement(insertRestaurant);
 		//5.바인드변수 값 설정
 			pstmt.setString(1, rDTO.getId());
@@ -104,7 +102,7 @@ public class RestaurantDAO {
 			pstmt.setDouble(6, rDTO.getLng());
 			
 		//6.쿼리문 수행 후 결과 얻기
-			pstmt.executeUpdate();
+			pstmt.executeQuery();
 			
 		}finally {
 		//7.연결끊기

@@ -1,6 +1,5 @@
 <%@page import="kr.co.sist.map.RestaurantService"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ include file="../fragments/siteProperty.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ include file="../fragments/loginChk2.jsp" %>
@@ -14,5 +13,5 @@ String id=(String)session.getAttribute("userId");
 rDTO.setId(id);
 
 RestaurantService rs=RestaurantService.getInstance();
-out.print( rs.addRestaurant(rDTO)); 
+out.print(rs.addRestaurant(rDTO)); 
 %>

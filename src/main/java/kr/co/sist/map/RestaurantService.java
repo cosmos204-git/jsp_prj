@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 import org.json.simple.JSONObject;
 
 public class RestaurantService {
@@ -34,7 +32,9 @@ public class RestaurantService {
 		return list;
 	}//searchRestaurant
 	
-	public boolean addRestaurant (RestaurantDTO rDTO ) {
+	
+	public String addRestaurant ( RestaurantDTO rDTO ) throws IOException {
+				
 		JSONObject jsonObj=new JSONObject();
 		jsonObj.put("resultFlag", false);
 		
@@ -42,11 +42,15 @@ public class RestaurantService {
 		try {
 			rDAO.insertRestaurant(rDTO);
 			jsonObj.put("resultFlag", true);
-					
-		}
+			
+		} catch ( SQLException e ){
+			e.printStackTrace();
+		}//end catch 
+			
 		
+		return jsonObj.toJSONString();
 		
-	}
+	}//addRestaurant
 	
 	
 	

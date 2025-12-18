@@ -113,49 +113,56 @@
 
 <script type="text/javascript">
 $(function(){
-	$("#btnAdd").click(function(){
-		//입력값에 대한 유효성 검증
-		var rest_name=$("#rest_name").val();
-		var param={
-				rest_name : $("#rest_name").val(),
-				menu : $("#menu").val(),
-				info : $("#rest_name").val(),
-				lat : $("#lat").val(),
-				lng : $("lng").val()
-		}
-		$.ajax({ 
-				url:"addMapProcess.jsp",
-				type:"get",
-				data: param,
-				dataType: "JSON",
-				error: function( xhr ){
-					alert("식당 등록 실패!!");
-					console.log( xhr.status )
-				},
-				success: function( jsonObj ){
-					var msg=rest_name+"등록을 실패하였습니다.";
-					if ( jsonObj.resultFlag ){
-						msg=rest_name+"을 성공적으로 추가하였습니다.";
-						
-						$("rest_name").val("");
-						$("menu").val("");
-						$("info").val("");
-						$("lat").val("");
-						$("lng").val("");
-						
-						$("vLat").text("");
-						$("vLng").text("");
-						
-					}
-					alert( msg );
-				}
-			
-		}); //ajax
-		
-	)};//click
-});//ready
 
+    $("#btnAdd").click(function(){
+
+        var rest_name = $("#rest_name").val();
+        
+        if($.trim(rest_name) === ""){
+            alert("식당명을 입력해주세요.");
+            $("#rest_name").focus();
+            return;
+        };
+            var param = {
+            rest_name : rest_name,
+            menu : $("#menu").val(),
+            info : $("#info").val(),
+            lat : $("#lat").val(),
+            lng : $("#lng").val()
+            }
+
+        $.ajax({
+            url : "addMapProcess.jsp",
+            type : "post",
+            data : param,
+            dataType : "json",
+            error : function( xhr ){
+                alert("식당 등록 실패!!");
+                console.log(xhr.status);
+            },
+            success : function( jsonObj ){
+                var msg = rest_name + " 등록을 실패하였습니다.";
+
+                if(jsonObj.resultFlag){
+                    msg = rest_name + "을 성공적으로 추가하였습니다.";
+
+                    $("#rest_name").val("");
+                    $("#menu").val("");
+                    $("#info").val("");
+                    $("#lat").val("");
+                    $("#lng").val("");
+
+                    $("#vLat").text("");
+                    $("#vLng").text("");
+                }
+
+                alert(msg);
+            }
+        });
+    });
+});
 </script>
+
 
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=5d565f45ef1cf5f19b2cea43b065c827"></script>
 <script>
@@ -186,8 +193,8 @@ kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
     // 마커 위치를 클릭한 위치로 옮깁니다
     marker.setPosition(latlng);
 
-    $("vLat").text(latlng.getLat());
-    $("vLng").text(latlng.getLng());
+    $("#vlat").text(latlng.getLat());
+    $("#vlng").text(latlng.getLng());
     
 	$("#lat").val(latlng.getLat());
 	$("#lng").val(latlng.getLng());
@@ -316,31 +323,28 @@ kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
 				<table>
 				<tr>
 					<td>식당명</td>
-					<td><input type="text" name="rest_name" id="rest_name"
-						style="width:350px"></td>
+					<td><input type="text" name="rest_name" id="rest_name" style="width:350px"></td>
 				 </tr>
 				 <tr>						
 					<td>대표메뉴</td>
-					<td><input type="text" name="menu" id="menu"
-						style="width:350px"></td>
+					<td><input type="text" name="menu" id="menu" style="width:350px"></td>
 				  </tr>
 				  <tr>
 					<td>상세정보</td>
 					<!-- TextArea 태그 사이에는 절대 공란을 두지 말라 -->
-					<td><textarea name="info" id="info" 
-						style="width:350px;height:150px"></textarea></td>
+					<td><textarea name="info" id="info"	style="width:350px;height:150px"></textarea></td>
 				</tr>
 				<tr>
 					<td>위도/경도</td>
-					<td><span id="vLat"></span>/<span id="vLng"></span>
+					<td><span id="vlat"></span>/<span id="vlng"></span>
 					<input type="hidden" name="lat" id="lat"/>
-					<input type="hidden" name="lng" id="lnt"/>
+					<input type="hidden" name="lng" id="lng"/>
 					</td>
 				 </tr>
 				
 				  <tr>
 					<td colspan="2" style="text-align:center">
-					<input type="button" value="등록" class="btn btn-primary btn-sm">
+					<input type="button" value="등록" class="btn btn-primary btn-sm" id="btnAdd"/>
 					<a href="mapList.jsp" class="btn btn-info btn-sm">리스트</a>
 					</td>
 				  </tr>
